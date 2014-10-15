@@ -1,0 +1,39 @@
+
+public class LinkStack<T> 
+{
+	protected Node<T> top;   // reference to the top of this stack
+
+	public LinkStack()
+	{
+		top = null;
+	}
+
+	public void push(T element)// Places element at the top of this stack.
+	{ 
+		Node<T> newNode = new Node<T>(element);
+		newNode.setLink(top);
+		top = newNode;
+	}     
+
+	public void pop()
+		 // Removes top element from this stack.
+	{                  
+		if (!isEmpty())
+		{
+		   top = top.getLink();
+		}
+	}
+
+	public T top()
+		//Returns top element from this stack.
+	{                 
+		if (!isEmpty())
+			return top.getInfo();
+		return null;
+	}
+
+	public boolean isEmpty(){
+		  // Returns true if this stack is empty, otherwise returns false.          
+			return top == null;
+	}
+}

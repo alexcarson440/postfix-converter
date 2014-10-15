@@ -1,0 +1,45 @@
+/**
+ * 
+ */
+
+/**
+ * @author Alexander Carson
+ *
+ */
+public class Stack 
+{
+	private int length = 0;
+	private Node first = null;
+	
+	private class Node 
+	{
+		private String string = null;
+		private Node next = null;
+	//	public Node() {}
+		public Node(String s) {string = s;}
+	}
+	
+	public Stack(){}
+    public Stack(String string) 
+    {
+		first = new Node(string);
+		length = 1;
+	}
+    
+	public void push(String string) 
+	{
+		Node second = first;
+		first = new Node(string);
+		first.next = second;
+		length++;
+	}
+	
+	public String pop()
+	{
+		if(length == 0) throw new RuntimeException("Stack underflow");
+		String string = first.string;
+		first = first.next;
+		length--;
+		return string;
+	}
+}

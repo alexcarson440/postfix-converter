@@ -1,0 +1,108 @@
+import java.util.Scanner;
+
+/**
+ * @author Alexander Carson
+ * The purpose of this program is to take an expression in the form of infix (i.e. 2*3+1) 
+ * and convert it to postfix (i.e. 23*1+) and then evaluate the result. This program will account for:
+ * +,-,*,/ ; basic operators
+ * ^ ; exponential (3^4 =81)
+ * Q ; square root function ( Q(11) =3, Q(64) =8)
+ * C ; cube root ( C(81) =4, C(27)=3)
+ * < ; shift left, shifts the bits of the binary form that amount of spaces (3<2 = 12 [3=0011, 12= 1100])
+ * > ; shift right, same as < but opposite direction (12>2 =3)
+ * % ; modulus (7%2 =1)
+ * This will allow input in only positive numbers up to 2 billion (2^31 -1 exactly) and will indicate when overflow occurs
+ */
+public class Conveter {
+
+	/**
+	 * 
+	 */
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		Scanner input = new Scanner(System.in);
+		System.out.println("Please type an infix expression");
+		String infix = input.nextLine();
+		String postfix = convertExpression(infix);
+		
+	}
+
+	private static String convertExpression(String infix) {
+		// TODO Auto-generated method stub
+		String[] tokens = split(infix);
+		LinkStack<String> stack = new LinkStack<String>();
+		
+		for(int i = 0; i < tokens.length; i++)
+		{
+			System.out.println(tokens[i]);
+			
+			/*
+			char c = infix.charAt(i);
+			else if(isOperator(c))
+				processeOperator(c);
+			else if(isLeftParen(c))
+				stack.push(String.valueOf(c));
+			else if(isRightParen(c))
+				processRightParen(c);
+			else if(isOperand(c))
+			{
+				String operand = null; 
+				stack.push(processOperand(c,infix,operand,i));
+			}*/
+		}	
+		return null;
+	}
+
+	private static String[] split(String infix) {
+		// This method will take the inputed string and separate it into tokens able to be used by the stack
+		String[] tokensLong = new String[infix.length()];
+		int shortLength = 0;
+		for(int i = 0; i< infix.length(); i++)
+			if(Character.isDigit(infix.charAt(i)))
+			{
+				String operand = String.valueOf(infix.charAt(i));
+				for(int k=i+1;k < infix.length(); k++,i++)
+					if(Character.isDigit(infix.charAt(k)))
+						operand+= String.valueOf(infix.charAt(k));
+					else break;
+				tokensLong[shortLength] = operand;
+				shortLength++;
+			}
+			else if(infix.charAt(i) == ' ')
+				continue;
+			else
+			{
+				tokensLong[shortLength] = String.valueOf(infix.charAt(i));
+				shortLength++;
+			}
+		String[] tokensShort = new String[shortLength];
+		for(int k=0; k< tokensShort.length; k++)
+			tokensShort[k] = tokensLong[k];
+		return tokensShort;
+	}
+
+	private static boolean isOperator(char c) {
+		//checks if the character is any of the supported operators
+		return (c == '+' || c == '-' || c == '*' || c =='/' || c == '^' || c == 'Q' || c == 'C' || c == '<' || c == '>' || c == '%');
+	}
+
+	private static void processeOperator(char c) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private static boolean isLeftParen(char c) {
+		//checks if the character is any of the supported left parens
+		return (c == '(' || c == '[' || c == '{');
+	}
+
+	private static boolean isRightParen(char c) {
+		//checks if the character is any of the supported right parens
+		return (c == ')' || c == ']' || c == '}');
+	}
+
+	private static void processRightParen(char c) {
+		// TODO Auto-generated method stub
+		
+	}
+}

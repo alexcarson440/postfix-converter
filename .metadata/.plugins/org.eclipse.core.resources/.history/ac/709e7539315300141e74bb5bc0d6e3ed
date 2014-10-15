@@ -1,0 +1,140 @@
+import java.util.Scanner;
+
+/**
+ * @author Alexander Carson
+ * The purpose of this program is to take an expression in the form of infix (i.e. 2*3+1) 
+ * and convert it to postfix (i.e. 23*1+) and then evaluate the result. This program will account for:
+ * +,-,*,/ ; basic operators
+ * ^ ; exponential (3^4 =81)
+ * Q ; square root function ( Q(11) =3, Q(64) =8)
+ * C ; cube root ( C(81) =4, C(27)=3)
+ * < ; shift left, shifts the bits of the binary form that amount of spaces (3<2 = 12 [3=0011, 12= 1100])
+ * > ; shift right, same as < but opposite direction (12>2 =3)
+ * % ; modulus (7%2 =1)
+ * This will allow input in only positive numbers up to 2 billion (2^31 -1 exactly) and will indicate when overflow occurs
+ */
+public class Conveter {
+
+	static LinkStack<String> stack = new LinkStack<String>();
+	static StringBuilder builder = new StringBuilder(1000);
+	
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		Scanner input = new Scanner(System.in);
+		System.out.println("Please type an infix expression");
+		String infix = input.nextLine();
+		String postfix = convertExpression(infix);
+		System.out.println("The post fix expression is:"+postfix);
+		
+	}
+
+	private static String convertExpression(String infix) 
+	{
+		//This method converts infix strings into postfix strings
+		String[] tokens = split(infix);
+		for(int i = 0; i < tokens.length; i++)
+		{
+			String token = tokens[i];
+			if(isOperator(token))
+				processOperator(token);
+			else if(isLeftParen(token))
+				stack.push(token);
+			else if(isRightParen(token))
+				processRightParen();
+			else //is operand
+				builder.append(token+" ");
+		}
+		while(!stack.isEmpty())
+		{
+			builder.append(stack.top());
+			stack.pop();
+		}
+		return builder.toString();
+	}
+
+	private static String[] split(String infix) {
+		// This method will take the inputed string and separate it into tokens able to be used by the stack
+		String[] tokensLong = new String[infix.length()];
+		int shortLength = 0; //length of the final array, also used as incremental position of array
+		for(int i = 0; i< infix.length(); i++) // for each point on the string
+			if(Character.isDigit(infix.charAt(i))) //if a digit...
+			{
+				String operand = String.valueOf(infix.charAt(i)); //string of the number
+				for(int k=i+1;k < infix.length(); k++,i++)
+					if(Character.isDigit(infix.charAt(k))) //check next positions to ensure full number is captured
+						operand+= String.valueOf(infix.charAt(k)); //append to number
+					else break; //when a digit is not next, number is over
+				tokensLong[shortLength] = operand; //store number to a string
+				shortLength++;
+			}
+			else if(infix.charAt(i) == ' ') 
+				continue;//skip spaces
+			else
+			{
+				tokensLong[shortLength] = String.valueOf(infix.charAt(i)); // store non-digit/non-space characters to their own string
+				shortLength++;
+			}
+		String[] tokensShort = new String[shortLength]; //Initialize new array with compensated length
+		for(int k=0; k< tokensShort.length; k++)
+			tokensShort[k] = tokensLong[k]; // copy to more efficient size array
+		return tokensShort;
+	}
+
+	private static boolean isOperator(String token) {
+		//checks if the string is any of the supported operators
+		return (token.equals("+") || token.equals("-") || token.equals("*") || token =="/") || token.equals("^") || token.equals("Q") || token.equals("C") || token.equals("<") || token.equals(">") || token.equals("%");
+	}
+
+	private static void processOperator(String token) {
+		// TODO Auto-generated method stub
+		String top = stack.top();
+		while( ( !(stack.isEmpty()) ) && ( !(isLeftParen(top)) ) && ( getPrecedence(token) <= getPrecedence(top) ) )
+		{
+			stack.pop();
+			builder.append(top+" ");
+			top = stack.top();
+		}
+		stack.push(token+" ");
+	}
+
+	private static int getPrecedence(String token) {
+		// creates a numerical value based on order of operations precedence, higher is first.
+		switch(token)
+		{
+			case "+": return 0;
+			case "-": return 0;
+			case "*": return 1;
+			case "/": return 1;
+			case "%": return 1;
+			case "^": return 2;
+			case "Q": return 2;
+			case "C": return 2;
+			case "<": return 3;
+			case ">": return 3;
+		}
+		return 0;
+	}
+
+	private static boolean isLeftParen(String token) {
+		//checks if the character is any of the supported left parens
+		return (token == "(" || token == "[" || token == "{");
+	}
+
+	private static boolean isRightParen(String token) {
+		//checks if the character is any of the supported right parens
+		return (token == ")" || token == "]" || token == "}");
+	}
+
+	private static void processRightParen() {
+		// This method will append every token on the stack until it gets back to the matching left paren
+		String top = stack.top();
+		while(!(isLeftParen(top)))
+		{
+			builder.append(top+" ");;
+			stack.pop();
+			top = stack.top();
+		}
+		stack.pop();	
+	}
+
+}
